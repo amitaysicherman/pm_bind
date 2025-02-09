@@ -18,9 +18,6 @@ class BindingDataset(Dataset):
         else:
             self.dataset = pd.read_csv(dataset)
 
-        self.dataset['protein_index'] = self.dataset['protein_index'].astype(int)
-        self.dataset['ligand_index'] = self.dataset['ligand_index'].astype(int)
-        self.dataset['neg_log10_affinity_M'] = self.dataset['neg_log10_affinity_M'].astype(float)
         self.protein_vecs = np.load(f"data/{protein_model}_vec.npy")
         self.molecule_vecs = np.load(f"data/{molecule_model}_vec.npy")
 
@@ -55,22 +52,22 @@ class BindingModel(torch.nn.Module):
         super().__init__()
         # Projection layers
         self.protein_layers = torch.nn.Sequential(
-            torch.nn.Linear(protein_dim, 512),
+            torch.nn.Linear(protein_dim, 256),
             torch.nn.ReLU()
         )
         self.molecule_layers = torch.nn.Sequential(
-            torch.nn.Linear(molecule_dim, 512),
+            torch.nn.Linear(molecule_dim, 256),
             torch.nn.ReLU()
         )
 
         self.final_layers = torch.nn.Sequential(
-            torch.nn.Linear(1024, 512),
-            torch.nn.BatchNorm1d(512, momentum=0.9, eps=0.001),
+            torch.nn.Linear(512, 128),
+            torch.nn.BatchNorm1d(128, momentum=0.9, eps=0.001),
             torch.nn.ReLU(),
             torch.nn.Dropout(0.2),
-            torch.nn.Linear(512, 64),
-            torch.nn.ReLU(),
-            torch.nn.Linear(64, 1)
+            torch.nn.Linear(128, 1),
+            # torch.nn.ReLU(),
+            # torch.nn.Linear(64, 1)
         )
 
     def forward(self, protein_features, molecule_features, labels=None):
