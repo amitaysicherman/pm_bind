@@ -26,7 +26,7 @@ class BindingDataset(Dataset):
         affinity = self.dataset.iloc[idx]['neg_log10_affinity_M']
         protein_vec = self.protein_vecs[protein_idx]
         molecule_vec = self.molecule_vecs[ligand_idx]
-        return protein_vec, molecule_vec, affinity
+        return {"protein_features": protein_vec, "molecule_features": molecule_vec, "labels": affinity}
 
 
 class BindingModel(torch.nn.Module):
