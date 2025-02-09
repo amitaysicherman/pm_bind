@@ -9,6 +9,16 @@ from seq_to_vec import model_to_dim
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
+def dataset_new_protein_split(dataset):
+    proteins = dataset['protein_index'].unique()
+    np.random.shuffle(proteins)
+    train_proteins = proteins[:int(0.9 * len(proteins))]
+    test_proteins = proteins[int(0.9 * len(proteins)):]
+    train_dataset = dataset[dataset['protein_index'].isin(train_proteins)]
+    test_dataset = dataset[dataset['protein_index'].isin(test_proteins)]
+    return train_dataset, test_dataset
+
+
 class BindingDataset(Dataset):
     def __init__(self, protein_model, molecule_model, dataset='data/dataset.csv'):
         self.dataset = pd.read_csv(dataset)
@@ -67,9 +77,7 @@ class BindingModel(torch.nn.Module):
 def main(protein_name, molecule_name, batch_size, lr):
     dataset = BindingDataset(protein_name, molecule_name)
 
-    train_dataset, test_dataset = torch.utils.data.random_split(dataset, [int(0.9 * len(dataset)),
-                                                                          len(dataset) - int(0.9 * len(dataset))])
-
+    train_dataset, test_dataset = dataset_new_protein_split(dataset)
     model = BindingModel(model_to_dim[protein_name], model_to_dim[molecule_name]).to(device)
     suffix = f"{protein_name}_{molecule_name}_{batch_size}_{lr}"
     trainer_args = TrainingArguments(
