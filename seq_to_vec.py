@@ -105,13 +105,20 @@ def apply_model_in_batches(model, seq_list, batch_size):
         vecs.append(model.to_vec(seq_list[i:end_index]))
     return np.concatenate(vecs)
 
-
-def main(model_name, batch_size):
+def main(model_name, batch_size,use_pubchecm):
     model = get_model(model_name)
-    input_file = "data/protein.fasta" if model_name in ["ProtBert", "esm3"] else "data/ligands.smi"
-    output_file = f"data/{model_name}_vec.npy"
-    with open(input_file, 'r') as f:
-        seq_list = f.read().splitlines()
+    if use_pubchecm:
+        assert model_name in ["ChemBERTa", "MoLFormer"], "Model not supported"
+        input_file = "data/ID-SMILES"
+        output_file = f"data/pubchecm_{model_name}_vec.npy"
+        with open(input_file, 'r') as f:
+            seq_list = f.read().splitlines()
+            seq_list=[seq.split()[1] for seq in seq_list[1:]]
+    else:
+        input_file = "data/protein.fasta" if model_name in ["ProtBert", "esm3"] else "data/ligands.smi"
+        output_file = f"data/{model_name}_vec.npy"
+        with open(input_file, 'r') as f:
+            seq_list = f.read().splitlines()
     vec = apply_model_in_batches(model, seq_list, batch_size)
     np.save(output_file, vec)
 
@@ -123,5 +130,6 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, help='Model to use', default="ChemBERTa",
                         choices=["ProtBert", "ChemBERTa", "MoLFormer", "esm3"])
     parser.add_argument('--batch_size', type=int, help='Batch size', default=32)
+    parser.add_argument('--use_pubchecm', type=bool, action='store_true', help='Use pubchem dataset')
     args = parser.parse_args()
-    main(args.model, args.batch_size)
+    main(args.model, args.batch_size, args.use_pubchecm)
