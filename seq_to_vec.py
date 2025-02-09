@@ -80,6 +80,7 @@ class ChemBERTa:
         print(list(seq_list))
         inputs = self.tokenizer(seq_list, return_tensors='pt', padding="longest", truncation=True, max_length=512)
         inputs = {k: v.to(device) for k, v in inputs.items()}
+        print(inputs['input_ids'].shape)
         with torch.no_grad():
             hidden_states = self.model(**inputs)[0]
         vec = torch.mean(hidden_states, dim=1)
