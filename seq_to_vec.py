@@ -96,7 +96,7 @@ def get_model(model):
         raise ValueError("Model not found")
 
 
-def apply_model_in_batches(model, seq_list, batch_size=32):
+def apply_model_in_batches(model, seq_list, batch_size):
     vecs = []
     for i in range(0, len(seq_list), batch_size):
         end_index = min(i + batch_size, len(seq_list))
@@ -110,6 +110,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Convert sequence to vector')
     parser.add_argument('--model', type=str, help='Model to use', default="ChemBERTa",
                         choices=["ProtBert", "ChemBERTa", "MoLFormer", "esm3"])
+    parser.add_argument('--batch_size', type=int, help='Batch size', default=32)
     args = parser.parse_args()
     model_name = args.model
     model = get_model(model_name)
@@ -117,5 +118,5 @@ if __name__ == "__main__":
     output_file = f"data/{model_name}_vec.npy"
     with open(input_file, 'r') as f:
         seq_list = f.read().splitlines()
-    vec = apply_model_in_batches(model, seq_list)
+    vec = apply_model_in_batches(model, seq_list, args.batch_size)
     np.save(output_file, vec)
