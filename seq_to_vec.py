@@ -112,7 +112,6 @@ def main(model_name, batch_size):
     output_file = f"data/{model_name}_vec.npy"
     with open(input_file, 'r') as f:
         seq_list = f.read().splitlines()
-    seq_list = [seq.split(",")[1] for seq in seq_list]
     vec = apply_model_in_batches(model, seq_list, batch_size)
     np.save(output_file, vec)
 

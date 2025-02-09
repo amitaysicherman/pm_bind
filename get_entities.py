@@ -28,7 +28,7 @@ with open(protein_fasta_file, 'w') as f:
         f.write(fasta_by_index[inx] + '\n')
 with open(molecule_smiles_file, 'w') as f:
     for inx in range(len(smiles_all)):
-        f.write(f"{inx},{smiles_by_index[inx]}\n")
+        f.write(f"{smiles_by_index[inx]}\n")
 with open(dataset_file, 'w') as f:
     f.write("protein_index,ligand_index,neg_log10_affinity_M\n")
     for fasta, smiles, affinity in indexes_dataset:
