@@ -68,9 +68,9 @@ class BindingModel(torch.nn.Module):
             torch.nn.BatchNorm1d(128, momentum=0.9, eps=0.001),
             torch.nn.ReLU(),
             torch.nn.Dropout(dropout),
-            torch.nn.Linear(128, 1),
-            # torch.nn.ReLU(),
-            # torch.nn.Linear(64, 1)
+            torch.nn.Linear(128, 128),
+            torch.nn.ReLU(),
+            torch.nn.Linear(128, 1)
         )
 
     def forward(self, protein_features, molecule_features, labels=None):
