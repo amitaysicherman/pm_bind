@@ -19,9 +19,9 @@ class BindingDataset(Dataset):
         return len(self.dataset)
 
     def __getitem__(self, idx):
-        protein_idx = self.dataset.iloc[idx]['protein_index']
-        ligand_idx = self.dataset.iloc[idx]['ligand_index']
-        affinity = self.dataset.iloc[idx]['neg_log10_affinity_M']
+        protein_idx = int(self.dataset.iloc[idx]['protein_index'])
+        ligand_idx = int(self.dataset.iloc[idx]['ligand_index'])
+        affinity = float(self.dataset.iloc[idx]['neg_log10_affinity_M'])
         protein_vec = self.protein_vecs[protein_idx]
         molecule_vec = self.molecule_vecs[ligand_idx]
         return protein_vec, molecule_vec, affinity
