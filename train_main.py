@@ -53,23 +53,27 @@ class BindingModel(torch.nn.Module):
         # Projection layers
         self.protein_layers = torch.nn.Sequential(
             torch.nn.Dropout(dropout),
-            torch.nn.Linear(protein_dim, 64),
+            torch.nn.Linear(protein_dim, 128),
             torch.nn.ReLU()
         )
         self.molecule_layers = torch.nn.Sequential(
             torch.nn.Dropout(dropout),
-            torch.nn.Linear(molecule_dim, 64),
+            torch.nn.Linear(molecule_dim, 128),
             torch.nn.ReLU()
         )
 
         self.final_layers = torch.nn.Sequential(
 
             # torch.nn.Linear(128, 128),
-            torch.nn.BatchNorm1d(128, momentum=0.9, eps=0.001),
+            torch.nn.BatchNorm1d(256, momentum=0.9, eps=0.001),
+            torch.nn.ReLU(),
+            torch.nn.Dropout(dropout),
+            torch.nn.Linear(256, 128),
             torch.nn.ReLU(),
             torch.nn.Dropout(dropout),
             torch.nn.Linear(128, 128),
             torch.nn.ReLU(),
+
             torch.nn.Linear(128, 1)
         )
 
