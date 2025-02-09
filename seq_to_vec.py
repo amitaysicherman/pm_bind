@@ -83,11 +83,11 @@ class ChemBERTa:
         vec = torch.mean(hidden_states, dim=1)
         vec_cpu = vec.detach().cpu().numpy()
         del hidden_states, vec
-        for k in inputs:
+        for k in list(inputs.keys()):
             del inputs[k]
         del inputs
         torch.cuda.empty_cache()
-
+        gc.collect()
         return vec_cpu
 
 
