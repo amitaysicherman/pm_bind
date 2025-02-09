@@ -109,7 +109,7 @@ def main(model_name, batch_size,use_pubchecm):
     model = get_model(model_name)
     if use_pubchecm:
         assert model_name in ["ChemBERTa", "MoLFormer"], "Model not supported"
-        input_file = "data/ID-SMILES"
+        input_file = "data/CID-SMILES"
         output_file = f"data/pubchecm_{model_name}_vec.npy"
         with open(input_file, 'r') as f:
             seq_list = f.read().splitlines()
