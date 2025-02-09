@@ -130,6 +130,6 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, help='Model to use', default="ChemBERTa",
                         choices=["ProtBert", "ChemBERTa", "MoLFormer", "esm3"])
     parser.add_argument('--batch_size', type=int, help='Batch size', default=32)
-    parser.add_argument('--use_pubchecm', type=bool, action='store_true', help='Use pubchem dataset')
+    parser.add_argument('--use_pubchecm', action='store_true', help='Use pubchem dataset')
     args = parser.parse_args()
     main(args.model, args.batch_size, args.use_pubchecm)
