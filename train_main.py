@@ -48,7 +48,7 @@ def dataset_new_protein_split(bining_dataset: BindingDataset):
     return train_dataset, test_dataset
 
 class BindingModel(torch.nn.Module):
-    def __init__(self, protein_dim, molecule_dim,dropout=0.2):
+    def __init__(self, protein_dim, molecule_dim,dropout=0.1):
         super().__init__()
         # Projection layers
         self.protein_layers = torch.nn.Sequential(
@@ -67,7 +67,7 @@ class BindingModel(torch.nn.Module):
             # torch.nn.Linear(128, 128),
             torch.nn.BatchNorm1d(128, momentum=0.9, eps=0.001),
             torch.nn.ReLU(),
-            torch.nn.Dropout(0.2),
+            torch.nn.Dropout(dropout),
             torch.nn.Linear(128, 1),
             # torch.nn.ReLU(),
             # torch.nn.Linear(64, 1)
