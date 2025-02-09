@@ -22,9 +22,9 @@ class BindingDataset(Dataset):
         return len(self.dataset)
 
     def __getitem__(self, idx):
-        protein_idx = self.dataset.iloc[idx]['protein_index']
-        ligand_idx = self.dataset.iloc[idx]['ligand_index']
-        affinity = self.dataset.iloc[idx]['neg_log10_affinity_M']
+        protein_idx = int(self.dataset.iloc[idx]['protein_index'])
+        ligand_idx = int(self.dataset.iloc[idx]['ligand_index'])
+        affinity = float(self.dataset.iloc[idx]['neg_log10_affinity_M'])
         protein_vec = self.protein_vecs[protein_idx]
         molecule_vec = self.molecule_vecs[ligand_idx]
         return {"protein_features": protein_vec, "molecule_features": molecule_vec, "labels": affinity}
@@ -45,7 +45,7 @@ class BindingModel(torch.nn.Module):
 
         self.final_layers = torch.nn.Sequential(
             torch.nn.Linear(1024, 512),
-            torch.nn.BatchNorm1d(1024, momentum=0.9, eps=0.001),
+            torch.nn.BatchNorm1d(512, momentum=0.9, eps=0.001),
             torch.nn.ReLU(),
             torch.nn.Dropout(0.2),
             torch.nn.Linear(512, 64),
