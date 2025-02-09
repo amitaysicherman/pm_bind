@@ -3,7 +3,7 @@ import re
 import numpy as np
 import torch
 from transformers import AutoModel, BertModel, BertTokenizer, AutoTokenizer
-
+from tqdm import tqdm
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 model_to_dim = {
@@ -98,7 +98,7 @@ def get_model(model):
 
 def apply_model_in_batches(model, seq_list, batch_size):
     vecs = []
-    for i in range(0, len(seq_list), batch_size):
+    for i in tqdm(range(0, len(seq_list), batch_size)):
         end_index = min(i + batch_size, len(seq_list))
         vecs.append(model.to_vec(seq_list[i:i + end_index]))
     return np.concatenate(vecs)
