@@ -53,13 +53,14 @@ class BindingModel(torch.nn.Module):
             torch.nn.Linear(64, 1)
         )
 
-    def forward(self, protein_features, molecule_features, labels):
+    def forward(self, protein_features, molecule_features, labels=None):
         protein_features = self.protein_layers(protein_features)
         molecule_features = self.molecule_layers(molecule_features)
         combined = torch.cat((protein_features, molecule_features), dim=1)
         out = self.final_layers(combined)
+        if labels is None:
+            return ModelOutput(logits=out)
         loss = torch.nn.functional.mse_loss(out.squeeze(1), labels)
-
         return ModelOutput(loss=loss, logits=out)
 
 
