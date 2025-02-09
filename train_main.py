@@ -73,7 +73,7 @@ def main(protein_name, molecule_name, batch_size, lr):
     trainer_args = TrainingArguments(
         output_dir=f'./results_{suffix}',
         num_train_epochs=10,
-        warmup_steps=500,
+        warmup_steps=100,
         logging_steps=1_000,
         eval_steps=1_000,
         save_steps=1_000,
@@ -93,3 +93,14 @@ def main(protein_name, molecule_name, batch_size, lr):
         eval_dataset=test_data_loader
     )
     trainer.train()
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Train binding model')
+    parser.add_argument('--protein_model', type=str, help='Model to use for protein', default="ProtBert")
+    parser.add_argument('--molecule_model', type=str, help='Model to use for molecule', default="MoLFormer")
+    parser.add_argument('--batch_size', type=int, help='Batch size', default=1024)
+    parser.add_argument('--lr', type=float, help='Learning rate', default=1e-4)
+    args = parser.parse_args()
+    main(args.protein_model, args.molecule_model, args.batch_size, args.lr)
