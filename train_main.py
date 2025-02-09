@@ -11,9 +11,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class BindingDataset(Dataset):
     def __init__(self, protein_model, molecule_model, dataset='data/dataset.csv'):
-        # datatypes: protein_index:int, ligand_index:int, neg_log10_affinity_M:float
-        self.dataset = pd.read_csv(dataset,
-                                   dtype={'protein_index': int, 'ligand_index': int, 'neg_log10_affinity_M': float})
+        self.dataset = pd.read_csv(dataset)
+        self.dataset['protein_index'] = self.dataset['protein_index'].astype(int)
+        self.dataset['ligand_index'] = self.dataset['ligand_index'].astype(int)
+        self.dataset['neg_log10_affinity_M'] = self.dataset['neg_log10_affinity_M'].astype(float)
         self.protein_vecs = np.load(f"data/{protein_model}_vec.npy")
         self.molecule_vecs = np.load(f"data/{molecule_model}_vec.npy")
 
