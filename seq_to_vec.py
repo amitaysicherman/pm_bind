@@ -46,7 +46,7 @@ class PortBert:
 
     def to_vec(self, seq_list: str):
         seq_list = [" ".join(list(re.sub(r"[UZOB]", "X", seq))) for seq in seq_list]
-        inputs = self.tokenizer(seq_list, return_tensors='pt', padding="max_length", truncation=True, max_length=1024)
+        inputs = self.tokenizer(seq_list, return_tensors='pt', padding="longest", truncation=True, max_length=1024)
         inputs = {k: v.to(device) for k, v in inputs.items()}
         with torch.no_grad():
             embedding_repr = self.model(**inputs)
@@ -61,7 +61,7 @@ class MoLFormer:
                                                trust_remote_code=True).to(device).eval()
 
     def to_vec(self, seq_list: str):
-        inputs = self.tokenizer(seq_list, return_tensors='pt', padding="max_length", truncation=True, max_length=512)
+        inputs = self.tokenizer(seq_list, return_tensors='pt', padding="longest", truncation=True, max_length=512)
         inputs = {k: v.to(device) for k, v in inputs.items()}
         with torch.no_grad():
             outputs = self.model(**inputs)
@@ -75,7 +75,7 @@ class ChemBERTa:
         self.model = AutoModel.from_pretrained("seyonec/ChemBERTa-zinc-base-v1").to(device).eval()
 
     def to_vec(self, seq_list: str):
-        inputs = self.tokenizer(seq_list, return_tensors='pt', padding="max_length", truncation=True, max_length=512)
+        inputs = self.tokenizer(seq_list, return_tensors='pt', padding="longest", truncation=True, max_length=512)
         inputs = {k: v.to(device) for k, v in inputs.items()}
         with torch.no_grad():
             hidden_states = self.model(**inputs)[0]
