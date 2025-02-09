@@ -77,7 +77,7 @@ class ChemBERTa:
         self.model = AutoModel.from_pretrained("seyonec/ChemBERTa-zinc-base-v1").to(device).eval()
 
     def to_vec(self, seq_list: str):
-        print(list(seq_list))
+        print(len(seq_list))
         inputs = self.tokenizer(seq_list, return_tensors='pt', padding="longest", truncation=True, max_length=512)
         inputs = {k: v.to(device) for k, v in inputs.items()}
         print(inputs['input_ids'].shape)
