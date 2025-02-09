@@ -65,8 +65,6 @@ def main(protein_name, molecule_name, batch_size, lr):
 
     train_dataset, test_dataset = torch.utils.data.random_split(dataset, [int(0.8 * len(dataset)),
                                                                           len(dataset) - int(0.8 * len(dataset))])
-    train_data_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_data_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
     model = BindingModel(model_to_dim[protein_name], model_to_dim[molecule_name]).to(device)
     suffix = f"{protein_name}_{molecule_name}_{batch_size}_{lr}"
@@ -89,8 +87,8 @@ def main(protein_name, molecule_name, batch_size, lr):
     trainer = Trainer(
         model=model,
         args=trainer_args,
-        train_dataset=train_data_loader,
-        eval_dataset=test_data_loader
+        train_dataset=train_dataset,
+        eval_dataset=test_dataset
     )
     trainer.train()
 
