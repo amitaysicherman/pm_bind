@@ -9,19 +9,15 @@ from seq_to_vec import model_to_dim
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def dataset_new_protein_split(dataset):
-    proteins = dataset['protein_index'].unique()
-    np.random.shuffle(proteins)
-    train_proteins = proteins[:int(0.9 * len(proteins))]
-    test_proteins = proteins[int(0.9 * len(proteins)):]
-    train_dataset = dataset[dataset['protein_index'].isin(train_proteins)]
-    test_dataset = dataset[dataset['protein_index'].isin(test_proteins)]
-    return train_dataset, test_dataset
-
-
 class BindingDataset(Dataset):
-    def __init__(self, protein_model, molecule_model, dataset='data/dataset.csv'):
-        self.dataset = pd.read_csv(dataset)
+    def __init__(self, protein_model, molecule_model, dataset='data/dataset.csv', data=None):
+        self.protein_model = protein_model
+        self.molecule_model = molecule_model
+        if data is not None:
+            self.dataset = data
+        else:
+            self.dataset = pd.read_csv(dataset)
+
         self.dataset['protein_index'] = self.dataset['protein_index'].astype(int)
         self.dataset['ligand_index'] = self.dataset['ligand_index'].astype(int)
         self.dataset['neg_log10_affinity_M'] = self.dataset['neg_log10_affinity_M'].astype(float)
@@ -39,6 +35,20 @@ class BindingDataset(Dataset):
         molecule_vec = self.molecule_vecs[ligand_idx]
         return {"protein_features": protein_vec, "molecule_features": molecule_vec, "labels": affinity}
 
+
+def dataset_new_protein_split(bining_dataset: BindingDataset):
+    dataset = bining_dataset.dataset
+    proteins = dataset['protein_index'].unique()
+    np.random.shuffle(proteins)
+    train_proteins = proteins[:int(0.9 * len(proteins))]
+    test_proteins = proteins[int(0.9 * len(proteins)):]
+    train_data = dataset[dataset['protein_index'].isin(train_proteins)]
+    test_data= dataset[dataset['protein_index'].isin(test_proteins)]
+    train_dataset= BindingDataset(protein_model=bining_dataset.protein_model, molecule_model=bining_dataset.molecule_model,
+                            data=train_data)
+    test_dataset = BindingDataset(protein_model=bining_dataset.protein_model, molecule_model=bining_dataset.molecule_model,
+                            data=test_data)
+    return train_dataset, test_dataset
 
 class BindingModel(torch.nn.Module):
     def __init__(self, protein_dim, molecule_dim):
