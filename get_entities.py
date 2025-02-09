@@ -1,7 +1,7 @@
 from datasets import load_dataset
 from tqdm import tqdm
 
-fasta_all =dict()
+fasta_all = dict()
 smiles_all = dict()
 indexes_dataset = []
 ds = load_dataset("jglaser/binding_affinity", split='train')
@@ -20,12 +20,15 @@ dataset_file = "data/dataset.csv"
 print(f"Number of unique proteins: {len(fasta_all)}")
 print(f"Number of unique ligands: {len(smiles_all)}")
 
+fasta_by_index = {idx: fasta for fasta, idx in fasta_all.items()}
+smiles_by_index = {idx: smiles for smiles, idx in smiles_all.items()}
+
 with open(protein_fasta_file, 'w') as f:
-    for fasta, idx in fasta_all.items():
-        f.write(f">{idx},{fasta}\n")
+    for inx in range(len(fasta_all)):
+        f.write(fasta_by_index[inx] + '\n')
 with open(molecule_smiles_file, 'w') as f:
-    for smiles, idx in smiles_all.items():
-        f.write(f"{idx},{smiles}\n")
+    for inx in range(len(smiles_all)):
+        f.write(f"{inx},{smiles_by_index[inx]}\n")
 with open(dataset_file, 'w') as f:
     f.write("protein_index,ligand_index,neg_log10_affinity_M\n")
     for fasta, smiles, affinity in indexes_dataset:
