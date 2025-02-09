@@ -81,7 +81,10 @@ class ChemBERTa:
         with torch.no_grad():
             hidden_states = self.model(**inputs)[0]
         vec = torch.mean(hidden_states, dim=1)
-        return vec.detach().cpu().numpy()
+        vec_cpu = vec.detach().cpu().numpy()
+        del vec, hidden_states
+
+        return vec_cpu
 
 
 def get_model(model):
