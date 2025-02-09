@@ -2,7 +2,6 @@ import re
 
 import numpy as np
 import torch
-import gc
 from transformers import AutoModel, BertModel, BertTokenizer, AutoTokenizer
 from tqdm import tqdm
 
@@ -85,12 +84,6 @@ class ChemBERTa:
             hidden_states = self.model(**inputs)[0]
         vec = torch.mean(hidden_states, dim=1)
         vec_cpu = vec.detach().cpu().numpy()
-        del hidden_states, vec
-        for k in list(inputs.keys()):
-            del inputs[k]
-        del inputs
-        torch.cuda.empty_cache()
-        gc.collect()
         return vec_cpu
 
 
@@ -111,9 +104,7 @@ def apply_model_in_batches(model, seq_list, batch_size):
     vecs = []
     for i in tqdm(range(0, len(seq_list), batch_size)):
         end_index = min(i + batch_size, len(seq_list))
-        vecs.append(model.to_vec(seq_list[i:i + end_index]))
-        torch.cuda.empty_cache()
-        gc.collect()
+        vecs.append(model.to_vec(seq_list[i:end_index]))
     return np.concatenate(vecs)
 
 
