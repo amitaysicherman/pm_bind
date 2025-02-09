@@ -5,6 +5,7 @@ import torch
 import gc
 from transformers import AutoModel, BertModel, BertTokenizer, AutoTokenizer
 from tqdm import tqdm
+
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 model_to_dim = {
@@ -114,6 +115,16 @@ def apply_model_in_batches(model, seq_list, batch_size):
     return np.concatenate(vecs)
 
 
+def main(model_name, batch_size):
+    model = get_model(model_name)
+    input_file = "data/protein.fasta" if model_name in ["ProtBert", "esm3"] else "data/ligands.smi"
+    output_file = f"data/{model_name}_vec.npy"
+    with open(input_file, 'r') as f:
+        seq_list = f.read().splitlines()
+    vec = apply_model_in_batches(model, seq_list, batch_size)
+    np.save(output_file, vec)
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -122,11 +133,4 @@ if __name__ == "__main__":
                         choices=["ProtBert", "ChemBERTa", "MoLFormer", "esm3"])
     parser.add_argument('--batch_size', type=int, help='Batch size', default=32)
     args = parser.parse_args()
-    model_name = args.model
-    model = get_model(model_name)
-    input_file = "data/protein.fasta" if model_name in ["ProtBert", "esm3"] else "data/ligands.smi"
-    output_file = f"data/{model_name}_vec.npy"
-    with open(input_file, 'r') as f:
-        seq_list = f.read().splitlines()
-    vec = apply_model_in_batches(model, seq_list, args.batch_size)
-    np.save(output_file, vec)
+    main(args.model, args.batch_size)
