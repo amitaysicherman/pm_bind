@@ -75,7 +75,7 @@ def main(protein_name, molecule_name, batch_size, lr):
         output_dir=f'./results_{suffix}',
         num_train_epochs=10,
         warmup_steps=100,
-        logging_steps=1_000,
+        logging_steps=250,
         eval_steps=1_000,
         save_steps=1_000,
         save_total_limit=3,
