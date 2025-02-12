@@ -64,7 +64,7 @@ class BindingModel(torch.nn.Module):
 
         self.final_layers = torch.nn.Sequential(
 
-            # torch.nn.Linear(128, 128),
+            torch.nn.Linear(256, 256),
             torch.nn.BatchNorm1d(256, momentum=0.9, eps=0.001),
             torch.nn.ReLU(),
             torch.nn.Dropout(dropout),
