@@ -36,6 +36,7 @@ class BindingDataset(Dataset):
 def dataset_new_protein_split(bining_dataset: BindingDataset):
     dataset = bining_dataset.dataset
     proteins = dataset['protein_index'].unique()
+    np.random.seed(42)
     np.random.shuffle(proteins)
     train_proteins = proteins[:int(0.9 * len(proteins))]
     test_proteins = proteins[int(0.9 * len(proteins)):]
