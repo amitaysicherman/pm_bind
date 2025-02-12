@@ -99,19 +99,23 @@ def main(protein_name, molecule_name, batch_size, lr):
     suffix = f"{protein_name}_{molecule_name}_{batch_size}_{lr}"
     trainer_args = TrainingArguments(
         output_dir=f'./results_{suffix}',
-        num_train_epochs=10,
+        num_train_epochs=5,
         warmup_steps=100,
         logging_steps=250,
-        eval_steps=1_000,
-        save_steps=1_000,
-        save_total_limit=3,
+        eval_steps=1000,  # Make sure this is set to when you want evaluations
+        save_steps=1000,
+        save_total_limit=1,  # Keep only 1 checkpoint
         save_only_model=True,
         evaluation_strategy="steps",
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
         lr_scheduler_type='constant',
         logging_dir=f'./logs_{suffix}',
-        learning_rate=lr
+        learning_rate=lr,
+        # Add these new parameters:
+        load_best_model_at_end=True,  # Load the best model at the end of training
+        metric_for_best_model="eval_loss",  # Use eval_loss to determine the best model
+        greater_is_better=False,  # Lower loss is better
     )
     trainer = Trainer(
         model=model,
