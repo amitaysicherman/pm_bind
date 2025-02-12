@@ -51,7 +51,7 @@ class BindingModel(torch.nn.Module):
     def __init__(self, protein_dim, molecule_dim,dropout=0.25):
         super().__init__()
         n1=32
-        n2=256
+        n2=128
         # Projection layers
         self.protein_layers = torch.nn.Sequential(
             torch.nn.Dropout(dropout),
