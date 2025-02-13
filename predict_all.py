@@ -8,9 +8,7 @@ import numpy as np
 import os
 from safetensors.torch import load_file
 from tqdm import tqdm
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 def get_last_cp(base_dir):
     files = os.listdir(base_dir)
@@ -84,52 +82,49 @@ ids = ['4752',
        '6444281',
        '5289284',
        '46217451']
+# is name is main
+if __name__ == "__main__":
+    with open("data/CID-SMILES") as f:
+        lines = f.read().splitlines()[1:]
+        molecules_seqs += [line.split()[1] for line in lines]
+        ids += [line.split()[0] for line in lines]
 
-with open("data/CID-SMILES") as f:
-    lines = f.read().splitlines()[1:]
-    molecules_seqs += [line.split()[1] for line in lines]
-    ids += [line.split()[0] for line in lines]
+    protein_models = ["ProtBert", "esm3"]
+    molecule_models = ["MoLFormer", "ChemBERTa"]
+    models_dict = {}
+    for protein_model in protein_models:
+        models_dict[protein_model] = get_model(protein_model)
 
+    for molecule_model in molecule_models:
+        models_dict[molecule_model] = get_model(molecule_model)
 
+    model_pairs = [(protein_model, molecule_model) for protein_model in protein_models for molecule_model in
+                   molecule_models]
 
-protein_models = ["ProtBert", "esm3"]
-molecule_models = ["MoLFormer", "ChemBERTa"]
-models_dict = {}
-for protein_model in protein_models:
-    models_dict[protein_model] = get_model(protein_model)
-
-for molecule_model in molecule_models:
-    models_dict[molecule_model] = get_model(molecule_model)
-
-model_pairs = [(protein_model, molecule_model) for protein_model in protein_models for molecule_model in
-               molecule_models]
-
-pair_to_affinity_model = {}
-for protein_model, molecule_model in model_pairs:
-    affinity_model = get_affinity_model(protein_model, molecule_model)
-    pair_to_affinity_model[(protein_model, molecule_model)] = affinity_model
-
-
-results_file = "results.csv"
-with open(results_file, "w") as f:
-    f.write("id,")
-    f.write(",".join([f"{protein_model}_{molecule_model}" for protein_model, molecule_model in model_pairs]))
-    f.write("\n")
-
-
-batch_size = 1024
-pbar = tqdm(range(0, len(molecules_seqs), batch_size))
-for batch in pbar:
-    batch_molecules = molecules_seqs[batch:batch + batch_size]
-    batch_ids = ids[batch:batch + batch_size]
-    all_scores = []
+    pair_to_affinity_model = {}
     for protein_model, molecule_model in model_pairs:
-        affinity_model = pair_to_affinity_model[(protein_model, molecule_model)]
-        scores = get_scores(protein_seq, batch_molecules, protein_model, molecule_model, affinity_model)
-        all_scores.append(scores)
-    with open(results_file, "a") as f:
-        for i, id in enumerate(batch_ids):
-            f.write(id + ",")
-            f.write(",".join([str(score[i]) for score in all_scores]))
-            f.write("\n")
-    pbar.set_postfix_str(f"Processed {batch + batch_size} molecules", refresh=True)
+        affinity_model = get_affinity_model(protein_model, molecule_model)
+        pair_to_affinity_model[(protein_model, molecule_model)] = affinity_model
+
+    results_file = "results.csv"
+    with open(results_file, "w") as f:
+        f.write("id,")
+        f.write(",".join([f"{protein_model}_{molecule_model}" for protein_model, molecule_model in model_pairs]))
+        f.write("\n")
+
+    batch_size = 1024
+    pbar = tqdm(range(0, len(molecules_seqs), batch_size))
+    for batch in pbar:
+        batch_molecules = molecules_seqs[batch:batch + batch_size]
+        batch_ids = ids[batch:batch + batch_size]
+        all_scores = []
+        for protein_model, molecule_model in model_pairs:
+            affinity_model = pair_to_affinity_model[(protein_model, molecule_model)]
+            scores = get_scores(protein_seq, batch_molecules, protein_model, molecule_model, affinity_model)
+            all_scores.append(scores)
+        with open(results_file, "a") as f:
+            for i, id in enumerate(batch_ids):
+                f.write(id + ",")
+                f.write(",".join([str(score[i]) for score in all_scores]))
+                f.write("\n")
+        pbar.set_postfix_str(f"Processed {batch + batch_size} molecules", refresh=True)
