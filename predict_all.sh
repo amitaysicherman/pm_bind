@@ -8,4 +8,4 @@
 
 
 
-python predict_all.py $(($SLURM_ARRAY_TASK_ID - 1))
+python predict_all.py --split_index $(($SLURM_ARRAY_TASK_ID - 1))

@@ -90,7 +90,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--split_total", type=int, default=20)
+    parser.add_argument("--split_total", type=int, default=15)
     parser.add_argument("--split_index", type=int, default=0)
 
     parser.add_argument("--batch_size", type=int, default=2048)
