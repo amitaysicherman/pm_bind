@@ -93,7 +93,7 @@ if __name__ == "__main__":
     parser.add_argument("--split_total", type=int, default=15)
     parser.add_argument("--split_index", type=int, default=0)
 
-    parser.add_argument("--batch_size", type=int, default=2048)
+    parser.add_argument("--batch_size", type=int, default=1024)
 
     args = parser.parse_args()
     split_total = args.split_total
