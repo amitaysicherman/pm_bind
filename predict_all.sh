@@ -7,5 +7,5 @@
 #SBATCH --array=1-20
 
 
-
-python predict_all.py --split_index $(($SLURM_ARRAY_TASK_ID - 1))
+split_index=$(($SLURM_ARRAY_TASK_ID - 1))
+python predict_all.py --split_index $split_index
